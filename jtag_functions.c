@@ -347,7 +347,7 @@ void jtag_set_trst_srst(uint8_t trst,uint8_t srst)
 }
 
 
-opendous_jtag_config_t PROGMEM opendous_jtag_config =
+const opendous_jtag_config_t PROGMEM opendous_jtag_config =
 {
 				.version_major=0,
 				.version_minor=4,

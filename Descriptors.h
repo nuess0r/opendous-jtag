@@ -1,17 +1,10 @@
 /*
-             LUFA Library
-     Copyright (C) Dean Camera, 2008.
-              
-  dean [at] fourwalledcubicle [dot] com
-      www.fourwalledcubicle.com
-
- Released under the MIT Licence
+    opendous-jtag by Vladimir S. Fonov, based on
+    eStick-jtag, by Cahya Wirawan <cahya@gmx.at> 
+    Based on opendous-jtag by Vladimir Fonov and LUFA demo applications by Dean Camera and Denver Gingerich.
+    Released under the MIT Licence.
 */
 
-/*
-    Loopback demo by Opendous Inc.
-    Based on LUFA demo applications by Dean Camera and Denver Gingerich.
-*/
 #ifndef _DESCRIPTORS_H_
 #define _DESCRIPTORS_H_
 
@@ -35,14 +28,14 @@
 		} USB_Descriptor_Configuration_t;
 
 	/* External Variables: */
-		extern USB_Descriptor_Configuration_t ConfigurationDescriptor;
+		extern const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor;
 
 	/* Function Prototypes: */
 	/*
 		uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue, const uint8_t wIndex, void** const DescriptorAddress)
 		                           ATTR_WARN_UNUSED_RESULT ATTR_NON_NULL_PTR_ARG(3);*/
 															 
-		uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue, const uint8_t wIndex, void** const DescriptorAddress)
+		uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue, const uint8_t wIndex, const void **const DescriptorAddress)
 											ATTR_WARN_UNUSED_RESULT ATTR_NON_NULL_PTR_ARG(3);															 
 
 #endif

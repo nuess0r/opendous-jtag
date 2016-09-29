@@ -1,16 +1,8 @@
 /*
-             LUFA Library
-     Copyright (C) Dean Camera, 2008.
-              
-  dean [at] fourwalledcubicle [dot] com
-      www.fourwalledcubicle.com
-
- Released under the MIT Licence
-*/
-
-/*
-    Loopback demo by Opendous Inc.
-    Based on LUFA demo applications by Dean Camera and Denver Gingerich.
+    opendous-jtag by Vladimir S. Fonov, based on
+    eStick-jtag, by Cahya Wirawan <cahya@gmx.at> 
+    Based on opendous-jtag by Vladimir Fonov and LUFA demo applications by Dean Camera and Denver Gingerich.
+    Released under the MIT Licence.
 */
 
 /** \file
@@ -29,16 +21,16 @@
  */
  
  
-USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
+const USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
 {
 	.Header                 = {.Size = sizeof(USB_Descriptor_Device_t), .Type = DTYPE_Device},
 		
-	.USBSpecification       = VERSION_BCD(01.10),
+	.USBSpecification       = VERSION_BCD(01,10,00),
 	.Class                  = 0x02,
 	.SubClass               = 0x00,
 	.Protocol               = 0x00,
 				
-	.Endpoint0Size          = FIXED_CONTROL_ENDPOINT_SIZE,
+	.Endpoint0Size          = ENDPOINT_CONTROLEP_DEFAULT_SIZE,
 	
 #ifdef ESTICK
 	.VendorID              = 0x1781,
@@ -54,7 +46,7 @@ USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
 	.ProductStrIndex        = 0x02,
 	.SerialNumStrIndex      = USE_INTERNAL_SERIAL,
 		
-	.NumberOfConfigurations = FIXED_NUM_CONFIGURATIONS
+	.NumberOfConfigurations = 1
 };
 
 /** Configuration descriptor structure. This descriptor, located in FLASH memory, describes the usage
@@ -63,7 +55,7 @@ USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
  *  a configuration so that the host may correctly communicate with the USB device.
  */
 
-USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
+const USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 {
 		.Config = 
 		{
@@ -77,7 +69,7 @@ USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 			.ConfigurationNumber    = 1,
 			.ConfigurationStrIndex  = NO_DESCRIPTOR,
 				
-			.ConfigAttributes       = (USB_CONFIG_ATTR_BUSPOWERED | USB_CONFIG_ATTR_SELFPOWERED),
+			.ConfigAttributes       = 0,
 			
 			.MaxPowerConsumption    = USB_CONFIG_POWER_MA(100)
 		},
@@ -104,7 +96,7 @@ USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 			.Header                 = {.Size = sizeof(USB_Descriptor_Endpoint_t), 
 			                           .Type = DTYPE_Endpoint},
 										 
-			.EndpointAddress        = (ENDPOINT_DESCRIPTOR_DIR_OUT | OUT_EP),
+			.EndpointAddress        = (ENDPOINT_DIR_OUT | OUT_EP),
 			.Attributes             = (EP_TYPE_BULK | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
 			.EndpointSize           = IN_EP_SIZE,
 			.PollingIntervalMS      = 0x00
@@ -115,7 +107,7 @@ USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 			.Header                 = {.Size = sizeof(USB_Descriptor_Endpoint_t), 
 			                           .Type = DTYPE_Endpoint},
 										 
-			.EndpointAddress        = (ENDPOINT_DESCRIPTOR_DIR_IN | IN_EP),
+			.EndpointAddress        = (ENDPOINT_DIR_IN |IN_EP),
 			.Attributes             = (EP_TYPE_BULK | ENDPOINT_ATTR_NO_SYNC | ENDPOINT_USAGE_DATA),
 			.EndpointSize           = OUT_EP_SIZE,
 			.PollingIntervalMS      = 0x00
@@ -126,7 +118,7 @@ USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
  *  the string descriptor with index 0 (the first index). It is actually an array of 16-bit integers, which indicate
  *  via the language ID table available at USB.org what languages the device supports for its string descriptors.
  */
-USB_Descriptor_String_t PROGMEM LanguageString =
+const USB_Descriptor_String_t PROGMEM LanguageString =
 {
 	.Header                 = {.Size = USB_STRING_LEN(1), .Type = DTYPE_String},
 		
@@ -137,7 +129,7 @@ USB_Descriptor_String_t PROGMEM LanguageString =
  *  form, and is read out upon request by the host when the appropriate string ID is requested, listed in the Device
  *  Descriptor.
  */
-USB_Descriptor_String_t PROGMEM ManufacturerString =
+const USB_Descriptor_String_t PROGMEM ManufacturerString =
 {
 	.Header                 = {.Size = USB_STRING_LEN(7), .Type = DTYPE_String},
 		
@@ -148,7 +140,7 @@ USB_Descriptor_String_t PROGMEM ManufacturerString =
  *  and is read out upon request by the host when the appropriate string ID is requested, listed in the Device
  *  Descriptor.
  */
-USB_Descriptor_String_t PROGMEM ProductString =
+const USB_Descriptor_String_t PROGMEM ProductString =
 {
 	.Header                 = {.Size = USB_STRING_LEN(12), .Type = DTYPE_String},
 		
@@ -161,7 +153,7 @@ USB_Descriptor_String_t PROGMEM ProductString =
  *  is called so that the descriptor details can be passed back and the appropriate descriptor sent back to the
  *  USB host.
  */
-uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue, const uint8_t wIndex, void** const DescriptorAddress)
+uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue, const uint8_t wIndex, const void** const DescriptorAddress)
 {
 	const uint8_t  DescriptorType   = (wValue >> 8);
 	const uint8_t  DescriptorNumber = (wValue & 0xFF);
